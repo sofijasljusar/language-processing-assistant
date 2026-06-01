@@ -9,22 +9,48 @@ The system processes audio input, converts it to text, and identifies unknown wo
 
 ## Key Features
 - Real-time speech-to-text processing
+- Unknown vocabulary detection from processed text
 - Asynchronous chunk-based audio processing pipeline
-- Detection of unknown vocabulary from processed text
-- Integration with external ML components
-- Parallel processing components implemented in Java
+- Cross-language system built with Java and Python
+- Producer-consumer architecture for audio processing
+- Integration with ML-based transcription models (faster-whisper)
 
 ## Architecture & Design
-The system is built using FastAPI and asynchronous processing techniques to efficiently handle continuous audio streams.
+The system consists of a Java-based audio processing service and a FastAPI transcription service:
 
-Java components are used for parallel processing tasks, improving throughput and enabling scalable handling of streaming data.
+1. **Java Recorder Service**
+   * Captures microphone audio
+   * Splits audio into chunks
+   * Filters silent segments
+   * Sends audio chunks for processing
 
-Audio data is processed in chunks to avoid blocking operations and improve responsiveness. The system coordinates multiple services across different stages of the pipeline.
+2. **FastAPI Transcriber Service**
 
-Key design considerations:
+   * Receives audio chunks
+   * Transcribes speech using Faster-Whisper
+   * Segments Chinese text using Jieba
+   * Detects and returns new vocabulary
+
+**Processing Pipeline**
+```text
+Microphone
+    ↓
+Java Recorder
+    ↓
+FastAPI Service
+    ↓
+Speech-to-Text
+    ↓
+Word Segmentation
+    ↓
+Unknown Word Detection
+```
+
+**Key design considerations:**
 - Non-blocking processing using async workflows
-- Efficient handling of large and continuous audio streams
+- Efficient handling of continuous audio streams
 - Coordinating multiple processing stages (speech → text → analysis)
+- Separation of responsibilities across independent services
 
 ## Tech Stack
 - FastAPI
@@ -40,3 +66,27 @@ Key design considerations:
 ## Future improvements
 - Integration of ML-based models to detect unknown words based on usage patterns
 - Expand to multi-language support by leveraging the system’s modular design
+
+## Running Locally
+**Transcriber Service**
+```
+python -m venv venv
+```
+
+```
+source venv/bin/activate
+```
+
+```
+pip install -r requirements.txt
+```
+
+```
+uvicorn app:app --host 127.0.0.1 --port 8000
+```
+
+Also run gui.py to see output.
+
+**Recorder Service**
+
+Run AudioRecorder.java and begin speaking :)
