@@ -13,7 +13,7 @@ public class AudioRecorder {
     private TargetDataLine microphone;
     private final AudioFormat format = AudioFormatConfig.getFormat();
 
-    private final ExecutorService senderPool = Executors.newFixedThreadPool(2);
+    private final ExecutorService senderPool = Executors.newCachedThreadPool();
     private final BlockingQueue<byte[]> queue = new LinkedBlockingQueue<>();
 
     private final int audioChunkLengthInBytes = getAudioChunkLengthInBytes();
